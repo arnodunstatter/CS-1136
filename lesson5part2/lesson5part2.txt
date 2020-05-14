@@ -1,0 +1,65 @@
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
+
+//reads in the time, given in seconds, verifies it as valid, and returns it
+double timeReadIn()
+{
+	double time;
+	cout << "Enter time (in seconds)\n";
+	cin >> time;
+	if (time < 0 || time > 30)
+	{
+		cout << "The time must be between 0.000 and 30.000 (inclusive)\n";
+	}
+	return time;
+	
+}
+
+
+//some vectors we'll use in the following funciton:
+vector<string> medium = { "Carbon Dioxide", "Air", "Helium", "Hydrogen" };
+vector<double> speed = { 258, 331.5, 972, 1270 };
+
+int calcAndOutput(int i, double time) //this calculates the distance traveled
+										//from the time and speed
+{
+	if (time >= 0 && time <= 30)
+	{
+		cout << medium[i - 1] << ": " << fixed << setprecision(3) << time << " seconds\n";
+		cout << "Traveled " << fixed << setprecision(4) << time * speed[i - 1] << " meters\n";
+		}
+	return 0;
+}
+
+
+int main()
+{
+	//declare and initialize variables
+	unsigned int menuSelection;
+	double time; //time traveled
+
+	//output our menu
+	cout << "Select the medium that sound is traveling through:\n";
+	cout << "1 Carbon Dioxide\n";
+	cout << "2 Air\n";
+	cout << "3 Helium\n";
+	cout << "4 Hydrogen\n";
+	cin >> menuSelection;
+
+	//this switch allows for a menu to select which material our sound moves through
+	if ((menuSelection == 1) || (menuSelection == 2) || (menuSelection == 3) || (menuSelection == 4))
+	{
+		time = timeReadIn();
+		calcAndOutput(menuSelection, time);
+	}
+	
+	else
+	{
+		cout << "The menu value is invalid. Please run the program again.\n";
+	}
+
+	return 0;
+}

@@ -1,0 +1,46 @@
+#include <iostream>
+
+using namespace std;
+
+//this program will read in a value between 32 and 126 
+//and output the corresponding ASCII character
+int main()
+{
+	unsigned int lowerValue, upperValue; //our range variables
+
+	cout << "Enter lower and upper values\n"; //first query for input values
+	cin >> lowerValue; //reads in our lower and upper range values
+	cin >> upperValue;
+
+	//this will verify the input
+	while (!(lowerValue > 31 && lowerValue < 127 && upperValue > 31 && upperValue < 127) || lowerValue > upperValue)
+	{
+		cout << "Values must be in range 32 to 126 inclusive\n"; //reminds user of valid input range
+		cout << "Enter lower and upper values\n";
+		cin >> lowerValue;
+		cin >> upperValue;
+	}
+
+	cout << "Characters for ASCII values between " << lowerValue << " and " << upperValue << endl;
+	cout << "----+----+----+----+" << endl; //first line 
+
+	int counter = 0; //going to use to endline after 20 char
+	for (unsigned int i = lowerValue; i <= upperValue; ++i)
+	{
+		char charOutput = i;
+		cout << charOutput;
+
+		counter++; //updates a counter
+
+		if (counter % 20 == 0) //checks if we need an endl
+			cout << endl;
+
+		/*the following if and else if output the final line*/
+		if ( i == upperValue && counter % 20 == 0) 
+			cout << "----+----+----+----+" << endl;
+		else if (i == upperValue)
+			cout << endl << "----+----+----+----+" << endl;
+	}
+
+	return 0;
+}

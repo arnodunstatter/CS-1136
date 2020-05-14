@@ -1,0 +1,124 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
+#include <cmath>
+
+using namespace std;
+
+unsigned int read(ifstream&, double&, double&, int&);
+double futureValue(double&, double&, int&);
+void display(ofstream&, double, double, int, double);
+
+
+int main()
+{
+	string fileName, outputFile = "output.xls"; 
+	double presentValue, interestRate, fValue;
+	int numMonths;
+	ifstream readFrom;
+	ofstream outputTo;
+	
+
+	cout << "Enter input file name\n"; //prompt for filename
+	getline(cin, fileName); //stores file name in fileName reference variable
+
+	//opens "pipeline" to read in from fileName
+	readFrom.open(fileName.c_str());
+	//checks if fileName was properly opened
+	if (!readFrom)
+	{
+		cout << "File \"" << fileName << "\" could not be opened\n"; //error message
+		return 0; //program ends
+	}
+
+	//opens "pipeline" to output to "output.xls"
+	outputTo.open(outputFile.c_str());
+	//checks if "output.xls" was properly opened
+	if (!outputTo)
+	{
+		readFrom.close(); //closes the readFrom file, fileName
+		cout << "File \"output.xls\" could ont be opened\n"; //error message
+		return 0; //program ends
+	}
+
+	outputTo << "Future Value\tPresent Value\tMonthly Interest\tMonths" << endl;
+
+	unsigned int readVal;
+	do
+	{
+		readVal = read(readFrom, presentValue, interestRate, numMonths); //sets readVal
+		if (readVal == 2) //there were invalid values
+		{
+			fValue = futureValue(presentValue, interestRate, numMonths); //determines future value
+			display(outputTo, presentValue, interestRate, numMonths, fValue); //displays error message
+		}
+		else if (readVal == 1) //values were read properly
+		{
+			fValue = futureValue(presentValue, interestRate, numMonths); //determines future value
+			display(outputTo, presentValue, interestRate, numMonths, fValue); //outputs to outputFile
+		}
+	} while (readVal != 0);
+
+	//close both our input and output files
+	readFrom.close();
+	outputTo.close();
+
+	return 0;
+}
+
+//this will read in our data using our readFrom object, and alters the last three reference variables
+unsigned int read(ifstream& readFrom, double& presentValue, double& interestRate, int& numMonths)
+{
+	int returnValue = 0; //sets default returnValue value for when the while loop doesn't enter because it's
+	//either done reading data or it can't read data because the input file never opened
+	while (readFrom >> presentValue >> interestRate >> numMonths)
+	{
+		//invalid data
+		if (presentValue <= 0 || interestRate <= 0 || numMonths <= 0)
+		{
+			returnValue = 2;
+			break;
+		}
+		
+		//valid data
+		else if (presentValue > 0 && interestRate > 0 && numMonths > 0)
+		{
+			returnValue = 1;
+			break;
+		}
+	}
+	interestRate = interestRate * .01; //converts percentage to decimal
+	return returnValue;
+}
+
+//performs our calculation of our future Value (fValue)
+double futureValue(double& presentValue, double& interestRate, int& numMonths)
+{
+	double fValue; 
+	fValue = presentValue * pow((1 + interestRate), numMonths); 
+	return fValue;
+}
+
+
+//responsible for output
+void display(ofstream& outputTo, double presentValue, double interestRate, int numMonths, double futureValue)
+{
+	//outputs error message if data is invalid
+	if (presentValue <= 0 || interestRate <= 0 || numMonths <= 0)
+	{
+		cout << fixed << setprecision(2) << presentValue << " ";
+		cout << fixed << setprecision(3) << interestRate * 100 << " " << numMonths << endl;
+		cout << "One or more of the above values are not greater than zero\n";
+	}
+
+	//outputs to our output.xls file
+	else
+	{
+		outputTo << fixed << setprecision(2) << futureValue << "\t";
+		outputTo << fixed << setprecision(2) << presentValue << "\t";
+		outputTo << fixed << setprecision(3) << interestRate * 100 << "\t";
+		outputTo << numMonths << endl;
+	}
+
+}

@@ -1,0 +1,87 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
+int main()
+{
+	string inputFileName;
+	unsigned int storeNum;
+	long long int salesVal;
+	int counter = 0; //this will be our while loop counter
+	int multiplesOf5k;
+
+	ifstream readFrom;
+	ofstream outputTo;
+
+	//gets our input file name from user
+	cout << "Enter input file name\n";
+	getline(cin, inputFileName);
+
+	//opens our input file 
+	readFrom.open(inputFileName.c_str());
+
+	//checks to make sure input file was opened
+	if (!readFrom)
+		cout << "File \"" << inputFileName << "\" could not be opened\n";
+
+	//opens our output file, saleschart.txt
+	outputTo.open("saleschart.txt");
+
+	//checks to make sure saleschart.txt was opened
+	if (!outputTo)
+	{
+		cout << "File \"saleschart.txt\" could not be opened\n";
+		readFrom.close();
+		return 0;
+	}
+
+	while (readFrom >> storeNum >> salesVal) //reads in values to storeNum and SalesVal and uses the successful reading as the conditional
+	{
+
+		//the following two if statements perform input validation for storeNum and salesVal
+		if (!(storeNum >= 1 && storeNum <= 99))
+		{
+			cout << "The store number " << storeNum << " is not valid\n";
+		}
+		if (salesVal < 0)
+		{
+			cout << "The sales value for store " << storeNum << " is negative\n";
+		}
+
+		else if (storeNum >= 1 && storeNum <= 99) //verifies valid values
+		{
+			if (counter == 0) //outputs the bar chart header
+			{
+				outputTo << "SALES BAR CHART\n(Each * equals 5,000 dollars)\n";
+			}
+
+			multiplesOf5k = static_cast<int>(salesVal) / 5000; //the number of *s we need
+
+			outputTo << "Store " << setw(2) << storeNum << ": "; //outputs the left side of the bar chart
+
+			for (int i = 0; i <= multiplesOf5k; i++) //outputs the right side of the bar chart, all the *s
+			{
+				if (i > 0) {
+					outputTo << "*";
+				}
+				if (i == multiplesOf5k)
+				{
+					outputTo << endl; //outputs an endline at the end of each bargraph row
+				}
+					
+			}
+		}
+		
+		counter++; //updates the counter
+	}
+	outputTo.close(); //close our output file
+	readFrom.close(); //close our input file
+
+	return 0;
+}
+		
+	
+

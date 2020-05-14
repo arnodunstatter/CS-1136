@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+//this function will read in seconds and output
+//an error message if seconds < 0
+double readSeconds()
+{
+	double seconds;
+
+	cout << "Enter the time (in seconds)\n";
+	cin >> seconds;
+
+	if (seconds < 0)
+		cout << "The time must be zero or more\n";
+
+	return seconds;
+}
+
+//this calculates the distance traveled on earth
+//in the given number of seconds
+double calculateEarthDistance(double seconds)
+{
+	double distance;
+	distance = 0.5 * 9.8 * pow(seconds, 2);
+	return distance;
+}
+
+//same as calculateEarthDistance, but with a 1.6 instead of 9.8 as the gravitational acceleration
+double calculateMoonDistance(double seconds)
+{
+	double distance;
+	distance = 0.5 * 1.6 * pow(seconds, 2);
+	return distance;
+}
+
+//displays results with particular formatting
+void displayResults(double seconds, double earthDistance, double moonDistance)
+{
+	cout << "The object traveled " << fixed << setprecision(4) << earthDistance;
+	cout << " meters in " << fixed << setprecision(2) << seconds << " seconds on Earth\n";
+
+	cout << "The object traveled " << fixed << setprecision(4) << moonDistance;
+	cout << " meters in " << fixed << setprecision(2) << seconds << " seconds on the Moon\n";
+}
+
+
+//calls all our other functions
+int main()
+{
+	double seconds = -1;
+	double earthDistance, moonDistance;
+
+	
+	//this while loop uses 0 as a sentinel signal to stop the program
+	while (!(seconds == 0))
+	{
+		seconds = readSeconds();
+
+		//valid input processing
+		if (seconds > 0)
+		{
+			earthDistance = calculateEarthDistance(seconds);
+			moonDistance = calculateMoonDistance(seconds);
+			displayResults(seconds, earthDistance, moonDistance);
+		}
+
+		//while 0 is "valid" input, it is used only to end the program
+		else if (seconds == 0)
+		{
+			break;
+		}
+	}
+
+	return 0;
+}
+
+

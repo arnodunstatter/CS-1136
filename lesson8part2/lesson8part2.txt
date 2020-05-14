@@ -1,0 +1,90 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+//this function does our calculations for us
+double presentValue(double futureValue, double interestRate, int numberYears)
+{
+	double presentValue;
+
+	presentValue = futureValue / (pow((1 + interestRate), numberYears));
+	return presentValue;
+}
+
+//this validates our futureValue and outputs it
+double readFutureValue()
+{
+	double futureValue;
+	cout << "Enter future value\n";
+	cin >> futureValue;
+	while (futureValue <= 0)
+	{
+		cout << "The future value must be greater than zero\n";
+		cout << "Enter future value\n";
+		cin >> futureValue;
+	}
+	return futureValue;
+}
+
+//this validates our interestRate and outputs it
+double readInterestRate()
+{
+	double interestRate;
+	cout << "Enter annual interest rate\n";
+	cin >> interestRate;
+
+	while (interestRate <= 0)
+	{
+		cout << "The annual interest rate must be greater than zero\n";
+		cout << "Enter annual interest rate\n";
+		cin >> interestRate;
+	}
+	return interestRate / 100;
+}
+
+//this validates our numberYears and outputs it
+int readNumberYears()
+{
+	int numberYears;
+	cout << "Enter number of years\n";
+	cin >> numberYears;
+	while (numberYears <= 0)
+	{
+		cout << "The number of years must be greater than zero\n";
+		cout << "Enter number of years\n";
+		cin >> numberYears;
+	}
+	return numberYears;
+}
+
+//this displays all relevant data
+void display(double presentValue, double futureValue, double interestRate, int numberYears)
+{
+	cout << "Present value: $" << fixed << setprecision(2) << presentValue << endl;
+	cout << "Future value: $" << fixed << setprecision(2) << futureValue << endl;
+	cout << "Annual interest rate: " << fixed << setprecision(3) << interestRate * 100 << "%" << endl;
+	cout << "Years: " << numberYears << endl;
+}
+
+//this acts as a driver to integrate all the above functions 
+int main()
+{
+	//our relevant variables
+	double futureValue, interestRate, pValue;
+	int numberYears;
+
+	//instantiating our variables with our read functions
+	futureValue = readFutureValue();
+	interestRate = readInterestRate();
+	numberYears = readNumberYears();
+
+	//calculate our presentValue with our presentValue function
+	pValue = presentValue(futureValue, interestRate, numberYears);
+
+	//displays relevant data
+	display(pValue, futureValue, interestRate, numberYears);
+
+	return 0;
+}

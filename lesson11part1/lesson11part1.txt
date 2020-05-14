@@ -1,0 +1,195 @@
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
+
+const int MAX_SIZE = 21;
+
+int readSquare(int[MAX_SIZE][MAX_SIZE], string);
+bool validateSquare(const int[MAX_SIZE][MAX_SIZE], int);
+void display(const int[MAX_SIZE][MAX_SIZE], int);
+
+int main() //acts as our driver to integrate the above 3 functions
+{
+	string inputFileName; //this will hold our input file's name
+	int size; //this will hold the array's size
+	int square[MAX_SIZE][MAX_SIZE]; //initializes our 2D array
+	bool squareIsValid; //will store the results of validateSquare
+
+	//next two lines get input file's name
+	cout << "Enter input file name\n";
+	cin >> inputFileName;
+	
+	size = readSquare(square, inputFileName); //sets the size value to the output of readSquare, 0 if data is not present or the file couldn't be open, otherwise it will be set to the size of the array
+
+	if (size == 0) //ends program, data was not valid or file couldn't be opened
+		return 0;
+	
+	display(square, size); 
+
+	squareIsValid = validateSquare(square, size); //checks if square is a valid Lo Shu Square
+
+	//this if-else branch notifies the user if the square is a Lo Shu magic square
+	if (squareIsValid == 1) 
+		cout << "Valid magic square\n";
+	else
+		cout << "Invalid magic square\n";
+
+	return 0;
+}
+
+//reads in data from a file and loads it into the appropriate variable and array
+int readSquare(int square[MAX_SIZE][MAX_SIZE], string inputFileName)
+{
+	int temp; //will directly receive values from the input file
+	int size; //will hold the size of the square
+	fstream inputFrom;
+	inputFrom.open(inputFileName.c_str()); //opens our input file
+
+	if (inputFrom) //checks that the file opened properly
+	{
+		if (inputFrom >> size) //loads first data point into size and checks that the file isn't empty
+		{
+			for (int row = 0; row < size; ++row)
+			{
+				for (int col = 0; col < size; ++col)
+				{
+					inputFrom >> square[row][col];
+				}
+			}
+			return size;
+			inputFrom.close(); //closes inputFrom "pipeline"
+		}
+		else
+		{
+			cout << "File was empty\n";
+			return 0; //indicates the file was empty
+		}
+	}
+	else
+	{
+		cout << "File \"" << inputFileName << "\" could not be opened\n";
+		return 0; //indicates that either the file did not open properly
+	}
+}
+
+//displays a formatted array
+void display(const int square[MAX_SIZE][MAX_SIZE], int size) 
+{
+	int width; //this will hold our width value
+	if ((size * size) / 100 >= 1) //these determine our width based on the largest value the array will store
+		width = 4;
+	else if ((size * size) / 10 >= 1)
+		width = 3;
+	else
+		width = 2;
+	
+	cout << "Magic square\n"; //outputs the header
+
+	//now to cycle through the square array and print values
+	for (int row = 0; row < size; ++row)
+	{
+		for (int col = 0; col < size; ++col)
+		{
+			cout << setw(width) << left << square[row][col];
+			if (col == size - 1)
+				cout << endl;
+		}
+	}
+
+}
+
+//validates 1,2,3....size*size each exists once in the square array, validates that each row, each column, and both diagnolas add to size*((size*size)+1)/2
+bool validateSquare(const int square[MAX_SIZE][MAX_SIZE], int size)
+{
+	vector<int> contains; //will contain a vector list of all the values actually in our 2D array
+	vector<int> shouldContain; //will contain a vector list of all the values that should be within the square
+	vector<int> occurences; //will contain a vector list of the number of occurences of each value which should be within the square
+	int occurence; //this will act as a temporary variable which will accumulate the number of occurences in the array of the values which should be in the array if it were a magic square
+	int productOfOccurences = 1; //this will contain the product of all the occurences. If it is 1, then the 2D array may be a magic square, otherwise it isn't.
+	int correctSum = size * ((size * size) + 1) / 2; //if the array is a magic square, then each column, each row, and each diagnoal should sum to this variable's value
+	int actualSum; //will act as a temporary value to hold the sum of each row, column, and diagonal
+
+	if (size == 0) //if square doesn't have any data entries, we return false (0)
+		return 0; 
+
+	for (int row = 0; row < size; ++row) //produces a vector list, of length size*size, of all the values in our 2D array
+	{
+		for (int col = 0; col < size; ++col)
+		{
+			contains.push_back(square[row][col]);
+		}
+	}
+
+	for (int i = 1; i <= size * size; ++i) //produces a vector list, of length size*size, of all the values that should be within square ( 1 through size*size)
+		shouldContain.push_back(i);
+	
+	for (int i = 0; i < (size*size) ; ++i) //this checks to see how many times each value which should occur in our 2D array actually does
+	{
+		occurence = 0; //this has to be 0 at the beginning of each j-loop
+		for (int j = 0; j < (size*size); ++j)
+		{
+			if (shouldContain[i] == contains[j])
+				++occurence;
+		}
+		occurences.push_back(occurence); //if a value which should be in the array isn't, occurence will be 0, otherwise occurence will be the number of times the value occurs in the array
+	} 
+	
+	for (int i = 0; i < (size * size); ++i) //If, by the end of this, productOfOccurences is 1, then the 2D array may be a magic square, otherwise it isn't.
+	{
+		productOfOccurences *= occurences[i];
+	}
+
+	if (productOfOccurences == 1) //now we check whether each diagnoal, row, and column sum to the correctSum
+	{
+		actualSum = 0;
+		for (int i = size - 1; i >= 0; --i) //finds the sum of values for the bottom left to top right diagnoal
+		{
+			actualSum += square[i][size - 1 - i];
+		}
+		if (actualSum == correctSum) //then continue checking
+		{
+			actualSum = 0;
+			for (int i = 0; i < size; ++i) //finds the sum of values for the top left to bottom right diagonal
+			{
+				actualSum += square[i][i];
+			}
+			if (actualSum == correctSum) //then continue checking
+			{
+				for (int row = 0; row < size; ++row) //these two for loops will check to make sure each row sums to the correctSum
+				{
+					actualSum = 0;
+					for (int col = 0; col < size; ++col)
+					{
+						actualSum += square[row][col];
+					}
+					if (actualSum != correctSum) //then square isn't a magic square, return false (0)
+						return 0;
+				}
+
+				for (int col = 0; col < size; ++col)
+				{
+					actualSum = 0;
+					for (int row = 0; row < size; ++row)
+					{
+						actualSum += square[row][col];
+					}
+					if (actualSum != correctSum) //then square isn't a magic square, return false (0)
+						return 0;
+				}
+				//if the function gets to this line, then our array "square" has passed all of our validation tests and we return true (1)
+				return 1; 
+			}
+			else //the top left to bottom right diagonal did not sum to the correct value, we return false (0)
+				return 0;
+
+		}
+		else //the bottom left to top right diagnoal did not sum to the correct value, we return false (0)
+			return 0; 
+	}
+	else //productOfOccurences was not 1, so the 2D array cannot be a magic square, we return false (0)
+		return 0;
+} 

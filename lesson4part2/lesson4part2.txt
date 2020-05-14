@@ -1,0 +1,42 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	long long int seconds; //declaring our input variable
+	int days, hours, minutes; //remainingSec will be the seconds that are output after everything else is calculated
+
+
+	cout << "Enter seconds\n";
+	cin >> seconds;
+	cout << "Total seconds: " << seconds << endl << endl;
+
+	if (seconds <= 0)
+		cout << "Total seconds must be greater than zero\n";
+
+
+
+
+	days = seconds / (60 * 60 * 24);
+	seconds = seconds % (60 * 60 * 24); //updates seconds to be what's left after days is calculated
+
+	hours = seconds / (60 * 60);
+	seconds = seconds % (60 * 60); //updates seconds
+
+	minutes = seconds / 60;
+	seconds = seconds % 60; //updates seconds
+
+	//now we output using conditionals to bypass unnecessary printing
+	if (days > 0)
+		cout << days << " day(s)\n";
+	if (hours > 0)
+		cout << hours << " hour(s)\n";
+	if (minutes > 0)
+		cout << minutes << " minute(s)\n";
+	if (seconds > 0)
+		cout << seconds << " second(s)\n";
+
+
+
+	return 0;
+}

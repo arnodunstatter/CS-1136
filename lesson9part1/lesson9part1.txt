@@ -1,0 +1,95 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+//declares our prototype functions
+void read(int&, int&, double&);
+void display(int, int, double);
+
+//integrates the two prototype functions, defined below
+int main()
+{
+	int spoolsOrdered, spoolsInStock;
+	double shippingCharge;
+	read(spoolsOrdered, spoolsInStock, shippingCharge);
+	display(spoolsOrdered, spoolsInStock, shippingCharge);
+	return 0;
+}
+
+//this function will use only reference variables, and will validate the inputs
+void read(int& spoolsOrdered, int& spoolsInStock, double& shippingCharge)
+{
+	char SSnH_yes_o_no;
+	int spoolsToSend;
+
+	cout << "Spools to be ordered\n";
+	cin >> spoolsOrdered;
+	while (spoolsOrdered < 1) //input validation and re-requesting
+	{
+		cout << "Spools order must be 1 or more\n";
+		cout << "Spools to be ordered\n";
+		cin >> spoolsOrdered;
+	}
+
+	cout << "Spools in stock\n";
+	cin >> spoolsInStock;
+	while (spoolsInStock < 0) //input validation and re-requesting
+	{
+		cout << "Spools in stock must be 0 or more\n";
+		cout << "Spools in stock\n";
+		cin >> spoolsInStock;
+	}
+
+	//determines number of spools which will be sent
+	if (spoolsOrdered <= spoolsInStock)
+		spoolsToSend = spoolsOrdered;
+	else
+		spoolsToSend = spoolsInStock;
+
+	cout << "Special shipping and handling (y or n)\n";
+	cin >> SSnH_yes_o_no;
+	//this will decide shippingCharge, either to a special user defined cost, or the default, multiplied by the spoolsToSend
+	if (SSnH_yes_o_no == 'Y' || SSnH_yes_o_no == 'y') 
+	{
+		cout << "Shipping and handling amount\n";
+		cin >> shippingCharge;
+		while (shippingCharge < 0) //input validation and re-requesting
+		{
+			cout << "The spool shipping and handling charge must be 0.0 or more\n";
+			cout << "Shipping and handling amount\n";
+			cin >> shippingCharge;
+		}
+		shippingCharge = spoolsToSend * shippingCharge; 
+	}
+	else
+		shippingCharge = 12.99 * spoolsToSend;		
+}
+
+//displays relevant data
+void display(int spoolsOrdered, int spoolsInStock, double shippingCharge)
+{
+	int cost; //establishes a local cost variable
+
+	if (spoolsOrdered < spoolsInStock) //determines if the spools in stock are sufficient to cover the spools ordered
+		//and outputs the appropriate data
+	{
+		cost = spoolsOrdered * 104;
+		cout << "Spools ready to ship: " << spoolsOrdered << endl;
+		cout << "Spools on back-order: 0\n"; //there will never be a backorder if spoolsOrdered > spoolsInStock
+		cout << "Subtotal ready to ship: $" << setw(10) << fixed << setprecision(2) << static_cast<double>(cost) << endl;
+	}
+		
+	else if (spoolsOrdered >= spoolsInStock) //determines if there will be a back-order of spools
+		//and outputs the appropriate values
+	{
+		cost = spoolsInStock * 104;
+		cout << "Spools ready to ship: " << spoolsInStock << endl;
+		cout << "Spools on back-order: " << spoolsOrdered - spoolsInStock << endl;
+		cout << "Subtotal ready to ship: $" << setw(10) << fixed << setprecision(2) << static_cast<double>(cost) << endl;
+	}
+
+	//outputs shipping and handling costs, and total charges
+	cout << "Shipping and handling:  $" << setw(10) << fixed << setprecision(2) << shippingCharge << endl;
+	cout << "Total shipping charges: $" << setw(10) << fixed << setprecision(2) << cost + shippingCharge << endl;
+}

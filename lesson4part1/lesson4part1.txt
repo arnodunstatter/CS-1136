@@ -1,0 +1,58 @@
+#include <cmath>
+#include <iostream>
+#include <iomanip>
+#include <vector>
+using namespace std;
+
+//this program will take a mass (kg) as an input and output the weight (N) of the object on the earth, moon, and venus
+int main()
+{
+	const double earthAccel = 9.81, moonAccel = 1.62, venusAccel = 8.87; //our constants
+	double mass; //we'll ask the user for this
+
+	//now we'll make some vectors to hold all the relevant data
+	vector<double> acceleration = { earthAccel, moonAccel, venusAccel };
+	vector<double> weight; //this will hold earthWeight, moonWeight, venusWeight
+	vector<string> location = { "Earth", "Moon", "Venus" };
+
+	//prompts user for input, and outputs it in desired format
+	cout << "Enter the mass in kg\n";
+	cin >> mass;
+	cout << "The mass is " << fixed << setprecision(4) << mass << " kg\n";
+
+	/*so long as our mass is greater than 0, for each index in the vectors,
+	we will cycle through our outputs*/
+	if (mass > 0)
+	{
+		//sets our output table up
+		cout << left << setw(8);
+		cout << "Location";
+		cout << right << setw(15); /*the instructions said width of 14 for this column,
+								   but the tests came up with 14 wrong and 15 right*/
+		cout << "Weight (N)\n";
+
+		//now to loop through the vectors' indexes and output into our table
+		for (int i = 0; i < 3; i++)
+		{
+			weight.push_back(mass * acceleration[i]); //will load our weight values into our weight vector
+			cout << left << setw(8) << location[i];
+			cout << right << setw(14) << fixed << setprecision(4) << weight[i] << endl;
+
+		}
+		if (weight[0] > 1500)
+		{
+			cout << "The object is heavy\n";
+		}
+		else if (weight[0] < 5)
+		{
+			cout << "The object is light\n";
+		}
+	}
+
+	else
+		cout << "The mass must be greater than zero\n";
+
+
+
+	return 0;
+}

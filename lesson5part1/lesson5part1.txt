@@ -1,0 +1,88 @@
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
+
+//a function for reading in the distance
+double distReadIn()
+{
+	double output;
+	cout << "Enter distance (in feet)\n";
+	cin >> output;
+	return output;
+}
+
+//some vectors we'll use in the following funciton:
+vector<string> material = { "Air", "Water", "Steel" };
+vector<double> speed = { 1100, 4900, 16400 };
+//below is a function which will do our calculation and our output, 
+//which basically replaces the following two lines in each case
+//cout << "Steel: " << fixed << setprecision(4) << distTrav << " ft\n";
+//cout << fixed << setprecision(4) << distTrav / 16400 << " ft\n";
+int calcAndOutput(int i, double dist)
+{
+	cout << material[i - 1] << ": " << fixed << setprecision(4) << dist << " ft\n";
+	cout << "Traveled for " << fixed << setprecision(4) << dist / speed[i - 1] << " seconds\n";
+	return 0;
+}
+
+
+int main()
+{
+	//declare and initialize variables
+	unsigned int menuSelection;
+	double distTrav; //distance traveled
+
+	//output our menu
+	cout << "Select the medium that sound is traveling through:\n";
+	cout << "1 Air\n";
+	cout << "2 Water\n";
+	cout << "3 Steel\n";
+	cin >> menuSelection;
+
+	//this switch allows for a menu to select which material our sound moves through
+	switch (menuSelection) {
+	case 1:
+	{
+		distTrav = distReadIn();
+		if (distTrav <= 0) //will verify distTrav is valid
+		{
+			cout << "The distance must be greater than zero\n";
+			break;
+		}
+		
+
+		calcAndOutput(menuSelection, distTrav);
+		break;
+	}
+	case 2:
+	{
+		distTrav = distReadIn();
+		if (distTrav <= 0) //will verify distTrav is valid
+		{
+			cout << "The distance must be greater than zero\n";
+			break;
+		}
+		calcAndOutput(menuSelection, distTrav);
+		break;
+	}
+
+	case 3:
+	{
+		distTrav = distReadIn();
+		if (distTrav <= 0) //will verify distTrav is valid
+		{
+			cout << "The distance must be greater than zero\n";
+			break;
+		}
+		calcAndOutput(menuSelection, distTrav);
+		break;
+	}
+
+	default:
+		cout << "The menu value is invalid. Please run the program again.\n";
+	}
+
+	return 0;
+}

@@ -1,0 +1,70 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+	string inputFileName;
+	double currentVal;
+	double sum = 0;
+	double validCount = 0;
+	double invalidCount = 0;
+	ifstream inputFrom;
+	ofstream outputTo;
+
+	//get our input file name
+	cout << "Enter input file name\n";
+	getline(cin, inputFileName);
+
+	//opens our input file
+	inputFrom.open(inputFileName.c_str());
+
+	//opens our output file
+	outputTo.open("invalid-values.txt");
+
+	if (!inputFrom) //error message if input file wasn't opened
+	{
+		cout << "File \"" << inputFileName << "\" could not be opened\n";
+		return 0;
+	}
+
+	else //looping through the input file and updating our validCount, sum, and invalid count
+	{
+		while (inputFrom >> currentVal)
+		{
+			if (currentVal >= 0 && currentVal <= 105)
+			{
+				validCount++;
+				sum += currentVal;
+			}
+			else if (currentVal < 0 || currentVal > 105)
+			{
+				invalidCount++;
+				outputTo << fixed << setprecision(5) << currentVal << endl;
+			}
+		}
+	}
+
+	//close our files
+	inputFrom.close();
+	outputTo.close();
+
+	//our output to display
+	cout << "Reading from file \"" << inputFileName << "\"\n";
+	cout << "Total values: " << validCount + invalidCount << endl;
+	cout << "Invalid values: " << invalidCount << endl;
+	cout << "Valid values: " << validCount << endl;
+
+	if (validCount > 0) //verifies average can be calculated, then outputs average
+	{
+		cout << "Average of valid values: ";
+		cout << fixed << setprecision(4) << sum / validCount << endl;
+	}
+	else //lets the user know if the average cannot be calculated
+		cout << "An average cannot be calculated\n";
+	
+	return 0;
+}

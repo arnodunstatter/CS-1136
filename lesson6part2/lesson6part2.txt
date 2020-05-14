@@ -1,0 +1,38 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+int main() //conversts from fahrenheit to celsius and kelvin
+{
+	double start, end, increment; //our start and end values in fahrenheit, and the increment
+	//this program accepts input without a query 
+	cin >> start;
+	cin >> end;
+	cin >> increment;
+
+	//if input validation fails, then the user will be repeatedly queried for valid input
+	while (!((start <= end) && (increment > 0.0)))
+	{
+		cout << "Starting temperature must be <= ending temperature and increment must be > 0.0\n";
+		cin >> start;
+		cin >> end;
+		cin >> increment;
+	}
+	
+	//this will format the output table's column titles
+	cout << setw(18) << "Fahrenheit" << setw(18) << "Celsius" << setw(18) << "Kelvin" << endl;
+
+	//this will calculate C and K values and output them with proper formatting to make the table
+	for (double i = start; i <= end; i += increment)
+	{
+		double tCelsius, tKelvin;
+		tCelsius = (i - 32) / 1.8;
+		tKelvin = tCelsius + 273.15;
+		cout << right << setw(18) << fixed << setprecision(4) << i;
+		cout << right << setw(18) << fixed << setprecision(4) << tCelsius;
+		cout << right << setw(18) << fixed << setprecision(4) << tKelvin;
+		cout << endl;
+	}
+	return 0;
+}

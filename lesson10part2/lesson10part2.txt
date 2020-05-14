@@ -1,0 +1,148 @@
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+//our one global constant
+const int MAX_COLUMNS = 5;
+
+//our four function prototypes
+int readFile(double[][MAX_COLUMNS], int, string );
+double average(double[][MAX_COLUMNS], int n);
+double columnAverage(double[][MAX_COLUMNS], int, int);
+double smallestInRow(double[][MAX_COLUMNS], int);
+
+int main()
+{
+	string inputFileName; //this will hold our file name
+	const int MAX_ROWS = 30; //max number of rows
+	double grades[MAX_ROWS][MAX_COLUMNS]; //initializes our array
+	int rows; //this will hold the output of readFile, the file qualifies
+
+	//these will get a file name from the user
+	cout << "Enter input file name\n";
+	cin >> inputFileName;
+
+	if (readFile(grades, MAX_ROWS, inputFileName) == -1) //in case file can't open
+	{
+		cout << "File \"" << inputFileName << "\" could not be opened\n";
+		return 0;
+	}
+	else if (readFile(grades, MAX_ROWS, inputFileName) == 0) //in case the file is empty
+	{
+		cout << "The input file \"" << inputFileName << "\" did not contain any data\n";
+		return 0;
+	}
+	else //if the file opens and has data
+	{
+		rows = readFile(grades, MAX_ROWS, inputFileName); //uses readFile to discern the number of rows of data in our file
+
+		//the rest of main is just displaying the results of the various functions
+		cout << "Processing " << rows << " rows, and " << MAX_COLUMNS << " columns\n";
+		cout << "Average for all values is " << fixed << setprecision(2) << average(grades, rows) << "\n";
+
+		for (int i = 0; i < MAX_COLUMNS; ++i)
+		{
+			cout << "Average for column " << i << " is " << fixed << setprecision(2) << columnAverage(grades, i, rows) << "\n";
+		}
+
+		for (int i = 0; i < rows; ++i)
+		{
+			cout << "Smallest value for row " << i << " is " << fixed << setprecision(2) << smallestInRow(grades, i) << "\n";
+		}
+
+		return 0;
+	}
+}
+
+int readFile(double values[][MAX_COLUMNS], int maxRows, string inputFileName)
+{
+	ifstream inputFrom;
+	inputFrom.open(inputFileName.c_str());
+	int dataPointCount = 0; //will act as a counter for how many data points we have
+	int rowCount = 0; //will act as a counter for how many rows we read
+
+	if (inputFrom)
+	{
+		//this for loop was an alternative method I found for doing what the while loop does
+		/*for (int i = 0; i < maxRows; ++i)
+		{
+			for (int j = 0; j < MAX_COLUMNS; ++j)
+			{
+				if (inputFrom >> values[i][j])
+				{
+					++dataPointCount;
+					rowCount = dataPointCount / MAX_COLUMNS;
+				}
+			}
+		}*/
+		int i = 0, j = 0; //these will act as loop control variables
+		while (i < maxRows && j < MAX_COLUMNS && inputFrom >> values[i][j]) //reads data from our file into our array
+		{
+			if (j != 0 && j % (MAX_COLUMNS-1) == 0) //these conditions and block will shift the values array to the next row
+			{
+				++i;
+				j = 0;
+			}
+			else //shifts the values array to the next column
+				++j;
+			++dataPointCount; //counts our data points
+		}
+		
+		if (i > maxRows) //if i > maxRows then it can only be greater by 1, so...
+			rowCount = i - 1;
+		else  //i will end as the number of rows of data
+			rowCount = i;
+		
+		inputFrom.close(); //closes our file if it was opened
+
+		if (dataPointCount < 5) //not enough data
+			return 0;
+		else
+			return rowCount; //everything went well, function returns number of rows of data in the input file
+	}
+	else
+		return -1; //indicates file couldn't be opened
+}
+
+double average(double values[][MAX_COLUMNS], int numberRows)
+{
+	int dataPointCount = 0; 
+	double sumOfDataPoints = 0;
+	double average;
+	for (int i = 0; i < numberRows; ++i) //loops through all elements in the values array, sums them, and counts how many there are
+	{
+		for (int j = 0; j < MAX_COLUMNS; ++j)
+		{
+			sumOfDataPoints += values[i][j];
+			++dataPointCount;
+		}
+	}
+	average = sumOfDataPoints / dataPointCount; //calculates average
+	return average;
+}
+
+double columnAverage(double values[][MAX_COLUMNS], int column, int numberRows)
+{
+	double sumOfColumn = 0;
+	double average;
+	for (int i = 0; i < numberRows; ++i) //loops through all elements in a column and sums them
+	{
+		sumOfColumn += values[i][column];
+	}
+	average = static_cast<double>(sumOfColumn) / numberRows; //calculates average
+	return average;
+}
+
+double smallestInRow(double values[][MAX_COLUMNS], int row) //modified find-minimum-in-list algorithm
+{
+	double min = values[row][0];
+	for (int i = 1; i < MAX_COLUMNS; ++i)
+	{
+		if (values[row][i] < min)
+			min = values[row][i];
+	}
+	return min;
+}

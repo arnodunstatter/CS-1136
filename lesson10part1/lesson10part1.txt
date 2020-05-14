@@ -1,0 +1,113 @@
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <iomanip>
+
+
+using namespace std;
+
+//our prototypes
+int read(char[30], string inputFileName);
+void workDisplay(char[30], char[30], int, int);
+
+
+int main() {
+	char studentAnswers[30], correctAnswers[30]; //initializes our arrays with 30 default elements
+	int numOfStudentAnswers, numOfCorrectAnswers; //declares our variables that will store the number of answers in each file
+	string studentAnswersFileName, correctAnswersFileName; //these will hold our file names
+	
+	cout << "Enter student answers file name\n"; //gets the file name that contains our student's answers
+	cin >> studentAnswersFileName;
+
+	if (read(studentAnswers, studentAnswersFileName) != -1) //checks that studentAnswersFileName was properly opened
+	{
+		numOfStudentAnswers = read(studentAnswers, studentAnswersFileName); //sets our number of student answers
+
+		cout << "Enter correct answer file name\n"; //gets the file name that contains our correct answers
+		cin >> correctAnswersFileName;
+
+		if (read(correctAnswers, correctAnswersFileName) != -1) //checks that correctAnswersFileName was properly opened
+			numOfCorrectAnswers = read(correctAnswers, correctAnswersFileName); //sets our number of correct answers
+		else //error message if correctAnswersFileName wasn't properly opened
+		{
+			cout << "File \"" << correctAnswersFileName << "\" could not be opened\n";
+			return 0;
+		}
+	}
+	else //error message if studentAnswersFileName wasn't properly opened
+	{
+		cout << "File \"" << studentAnswersFileName << "\" could not be opened\n";
+		return 0;
+	}
+
+	if (numOfStudentAnswers == numOfCorrectAnswers) //verifies the number of student answers is equal to the number of correct answers
+		if (numOfStudentAnswers == 0) //if both of these are zero, we can't calculate a grade
+		{
+			cout << "The number of student answers and correct answers are both 0\n";
+			cout << "No grade can be calculated\n";
+			return 0;
+		}
+		else //this condition is for when there have been no errors in opening files, and the number of student answers is equal to the number of correct answers and is greater than zero
+		{
+			workDisplay(studentAnswers, correctAnswers, numOfStudentAnswers, numOfCorrectAnswers); //will print out all missed questions (incorrect and correct answers), the student's grade, and the pass/fail status
+			return 0;
+		}
+	else //prints out eror messages if the number of student answers isn't the same as the number of correct answers
+	{
+		cout << "The student answers file has " << numOfStudentAnswers << " entries and the correct answers ";
+		cout << "file has " << numOfCorrectAnswers << " entries\n";
+		cout << "Grading cannot be done if they are not the same\n";
+		return 0;
+	}
+		
+	
+}
+
+int read(char arrayName[30], string inputFileName)
+{
+	int numOfInputs = 0; //will act as our loop control variable and our counter to store the number of answers in inputFileName
+	ifstream inputFrom;
+	inputFrom.open(inputFileName.c_str());
+	if (inputFrom)
+	{
+		while (inputFrom >> arrayName[numOfInputs]) //cycles through inputFileName and stores data in arrayName
+		{
+			++numOfInputs; //counts how many answers we have
+		}
+		inputFrom.close(); //close statement is only necessary if the open worked ( inputFrom = True )
+		
+		if (numOfInputs >= 30) //30 answers is the max
+			return 30;
+		else //returns the number of answers when the value is less than 30
+			return numOfInputs;
+	}
+	else
+		return -1; //this indicates the inputFileName file does not exist or didn't open properly
+	
+}
+
+
+void workDisplay(char studentAnswersArray[30], char correctAnswersArray[30], int numOfStudentAnswers, int numOfCorrectAnswers) //this assumes numOfStudentAnswers == numOfCorrectAnswers
+{
+	int numMissed = 0; //The total number of questions missed by the student
+	double percentage; //The percentage of the questions answered correctly.
+	for (int i = 0, j = 0; i < numOfStudentAnswers && j < numOfCorrectAnswers; ++i, ++j) //built to be dynamic, in case numOfStudentAnswers != numOfCorrectAnswers
+	{
+		if (studentAnswersArray[i] != correctAnswersArray[j])
+		{
+			++numMissed; //increments the number of missed problems
+			cout << "Question " << j + 1 << " has incorrect answer '" << studentAnswersArray[i] << "', the correct answer is '" << correctAnswersArray[j] << "'\n"; //outputs missed problems' numbers, the incorrect answer, and the correct answer
+		}
+	}
+	percentage = ((numOfCorrectAnswers - numMissed) / static_cast<double>(numOfCorrectAnswers)) * 100; //percentage can be a double thanks to static_cast
+
+	//these last print statements print out the number of missed problems, the student's grade as a percentage, and their pass/fail status
+	cout << numMissed << " questions were missed out of " << numOfCorrectAnswers << endl;
+	cout << "The student grade is " << fixed << setprecision(1) << percentage << "%" << endl;
+	cout << "The student ";
+	if (percentage >= 70)
+		cout << "passed\n";
+	else
+		cout << "failed\n";
+}
+
